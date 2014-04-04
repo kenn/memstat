@@ -35,7 +35,6 @@ class TestCli < Minitest::Test
     assert_equal status.hwm,  131044  * 1024
     assert_equal status.rss,  131044  * 1024
     assert_equal status.data, 133064  * 1024
-    assert_equal status.peak, 277756  * 1024
     assert_equal status.stk,  136     * 1024
     assert_equal status.exe,  4       * 1024
     assert_equal status.lib,  21524   * 1024
@@ -46,8 +45,8 @@ class TestCli < Minitest::Test
   def test_benchmark
     n = 100
     Benchmark.bm(10) do |x|
-      x.report("ps:")       { n.times.each { `ps -o rss -p #{$$}`.strip.split.last.to_i } }
-      x.report("memstat:")  { n.times.each { Memstat::Proc::Status.new(:path => STATUS_PATH).rss } }
+      x.report("ps:")       { n.times.each { `ps -o rss -p #{Process.pid}`.strip.split.last.to_i } }
+      x.report("memstat:")  { n.times.each { Memstat::Proc::Status.new(:pid => Process.pid).rss } }
     end
   end
 end
