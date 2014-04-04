@@ -79,7 +79,7 @@ status.swap   # Swap size
 
 See [details](http://ewx.livejournal.com/579283.html) for each item.
 
-## Commandline
+## Command Line
 
 memstat also comes with a command line utility to report detailed memory statistics by aggregating `/proc/[pid]/smaps`.
 
