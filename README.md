@@ -14,7 +14,7 @@ For a typical Rails app, memstat is 130 times faster than `ps -o rss`:
 
 ```ruby
 Benchmark.bm(10) do |x|
-  x.report("ps:")       { 100.times.each { `ps -o rss -p #{Process.pid}`.strip.split.last.to_i } }
+  x.report("ps:")       { 100.times.each { `ps -o rss -p #{Process.pid}`.strip.to_i } }
   x.report("memstat:")  { 100.times.each { Memstat::Proc::Status.new(:pid => Process.pid).rss } }
 end
 
@@ -29,11 +29,15 @@ Tested on [Linode](https://www.linode.com) with a Rails app of 140MB memory usag
 
 Add this line to your application's Gemfile:
 
-    gem 'memstat'
+```ruby
+gem 'memstat'
+```
 
 Or install it yourself as:
 
-    $ gem install memstat
+```sh
+$ gem install memstat
+```
 
 ## Usage
 
@@ -58,7 +62,7 @@ use Memstat::OobGC::Unicorn, 150*(1024**2)  # Invoke GC if the process is bigger
 
 Other methods are:
 
-```
+```ruby
 status.peak   # Peak VM size
 status.size   # Current VM size
 status.lck    # mlock-ed memory size (unswappable)
