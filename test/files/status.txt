@@ -1,0 +1,40 @@
+Name:	ruby
+State:	S (sleeping)
+Tgid:	1398
+Pid:	1398
+PPid:	1
+TracerPid:	0
+Uid:	0	0	0	0
+Gid:	0	0	0	0
+FDSize:	64
+Groups:	0 
+VmPeak:	  277756 kB
+VmSize:	  277756 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	  131044 kB
+VmRSS:	  131044 kB
+VmData:	  133064 kB
+VmStk:	     136 kB
+VmExe:	       4 kB
+VmLib:	   21524 kB
+VmPTE:	     540 kB
+VmSwap:	       0 kB
+Threads:	3
+SigQ:	1/31462
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000000000
+SigIgn:	0000000000001000
+SigCgt:	000000018a316e47
+CapInh:	0000000000000000
+CapPrm:	0000001fffffffff
+CapEff:	0000001fffffffff
+CapBnd:	0000001fffffffff
+Seccomp:	0
+Cpus_allowed:	ff
+Cpus_allowed_list:	0-7
+Mems_allowed:	00000000,00000001
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	3518
+nonvoluntary_ctxt_switches:	106

@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+# Abort beautifully with ctrl+c.
+Signal.trap(:INT) { abort "\nAborting." }
+
+# Load the main lib and invoke CLI.
+require 'memstat'
+Memstat::Cli.start
