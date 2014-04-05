@@ -1,5 +1,7 @@
 # Memstat: Fast memory statistics & better out-of-band GC
 
+[![Build Status](https://secure.travis-ci.org/kenn/memstat.png)](http://travis-ci.org/kenn/memstat)
+
 Ruby 2.1 introduced generational garbage collection. It is a major improvement in terms of shorter GC pauses and overall higher throughput, but that comes with a [drawback of potential memory bloat](http://www.omniref.com/blog/blog/2014/03/27/ruby-garbage-collection-still-not-ready-for-production/).
 
 You can mitigate the bloat by manually running `GC.start`, but like Unicorn's out-of-band GC, doing it after every request can seriously hurt the performance. You want to run `GC.start` only when the process gets larger than X MB.
@@ -111,10 +113,7 @@ In this case, 103,536 kB out of 131,020 kB is shared, which means 79% of its mem
 
 For more details, [read this gist](https://gist.github.com/kenn/5105175).
 
-## Contributing
+## Changelog
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+### 0.1.0, release 2014-04-03
+* Initial release

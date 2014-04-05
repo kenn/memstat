@@ -8,10 +8,13 @@ module Memstat
 
       def process_client(client)
         super(client) # Unicorn::HttpServer#process_client
-        status = Memstat::Proc::Status.new(:pid => Process.pid)
 
-        if status.rss > OOBGC_THRESHOLD
-          GC.start
+        if Memstat.linux?
+          status = Memstat::Proc::Status.new(:pid => Process.pid)
+
+          if status.rss > OOBGC_THRESHOLD
+            GC.start
+          end
         end
       end
     end

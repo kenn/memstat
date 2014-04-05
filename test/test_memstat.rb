@@ -42,11 +42,15 @@ class TestCli < Minitest::Test
     assert_equal status.swap, 0       * 1024
   end
 
+  def test_oobgc
+    Memstat::OobGC::Unicorn
+  end
+
   def test_benchmark
     n = 100
     Benchmark.bm(10) do |x|
-      x.report("ps:")       { n.times.each { `ps -o rss -p #{Process.pid}`.strip.split.last.to_i } }
-      x.report("memstat:")  { n.times.each { Memstat::Proc::Status.new(:pid => Process.pid).rss } }
+      x.report("ps:")       { n.times.each { `ps -o rss -p #{Process.pid}`.strip.to_i } }
+      x.report("memstat:")  { n.times.each { Memstat::Proc::Status.new(:path => STATUS_PATH).rss } }
     end
   end
 end
