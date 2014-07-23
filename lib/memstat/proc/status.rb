@@ -16,7 +16,7 @@ module Memstat
         @hash = {}
 
         @lines.each do |line|
-          match = line.match(/(\w+):(.+)/)
+          match = line.match(/(\w+):(.*)/)
           key = match[1]
           value = match[2]
 
