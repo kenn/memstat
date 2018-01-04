@@ -1,18 +1,14 @@
-# Memstat: Fast memory statistics & better out-of-band GC
+# Memstat: Fast memory statistics
 
 [![Build Status](https://secure.travis-ci.org/kenn/memstat.png)](http://travis-ci.org/kenn/memstat)
 
-Ruby 2.1 introduced generational garbage collection. It is a major improvement in terms of shorter GC pauses and overall higher throughput, but that comes with a [drawback of potential memory bloat](http://www.omniref.com/blog/blog/2014/03/27/ruby-garbage-collection-still-not-ready-for-production/).
-
-You can mitigate the bloat by manually running `GC.start`, but like Unicorn's out-of-band GC, doing it after every request can seriously hurt the performance. You want to run `GC.start` only when the process gets larger than X MB.
-
-memstat offers a fast way to retrieve the memory usage of the current process, by providing direct access to `/proc/[pid]/status` and `/proc/[pid]/smaps`.
+memstat offers a fast way to retrieve the memory usage of the current process, by providing object mapping to `/proc/[pid]/status` and `/proc/[pid]/smaps` on Linux.
 
 If you've ever called the `ps -o rss` command from inside a Ruby process to capture real memory usage, chances are, you've already learned that it is very slow.
 
 That's because shelling out `ps` creates an entire copy of the ruby process - typically 70-150MB for a Rails app - then wipe out those memory with the executable of `ps`. Even with copy-on-write and POSIX-spawn optimization, you can't beat the speed of directly reading statistics from memory that is maintained by the kernel.
 
-For a typical Rails app, memstat is 130 times faster than `ps -o rss`:
+For a typical Rails app, memstat is **130 times faster** than `ps -o rss`:
 
 ```ruby
 Benchmark.bm(10) do |x|
@@ -43,28 +39,9 @@ $ gem install memstat
 
 ## Usage
 
-Check the memory usage, and run GC if it's too big. Note that current version only supports Linux.
-
 ```ruby
-if Memstat.linux?
-  status = Memstat::Proc::Status.new(pid: Process.pid)
-  if status.rss > 150.megabytes
-    GC.start
-  end
-end
-```
+status = Memstat::Proc::Status.new(pid: Process.pid)
 
-For Unicorn, add these lines to your `config.ru` (should be added above loading environment) to check memory size on every request and run GC out-of-band:
-
-```ruby
-require 'memstat'
-
-use Memstat::OobGC::Unicorn, 150*(1024**2)  # Invoke GC if the process is bigger than 150MB
-```
-
-Other methods are:
-
-```ruby
 status.peak   # Peak VM size
 status.size   # Current VM size
 status.lck    # mlock-ed memory size (unswappable)
@@ -81,11 +58,28 @@ status.swap   # Swap size
 
 See [details](http://ewx.livejournal.com/579283.html) for each item.
 
+For shared memory status between forked processes:
+
+```ruby
+smaps = Memstat::Proc::Smaps.new(pid: Process.pid)
+
+smaps.size
+smaps.rss
+smaps.pss
+smaps.shared_clean
+smaps.shared_dirty
+smaps.private_clean
+smaps.private_dirty
+smaps.swap
+```
+
+See [this question](https://unix.stackexchange.com/questions/33381/getting-information-about-a-process-memory-usage-from-proc-pid-smaps).
+
 ## Command Line
 
 memstat also comes with a command line utility to report detailed memory statistics by aggregating `/proc/[pid]/smaps`.
 
-This is useful to examine the effectiveness of copy-on-write for forking servers like Unicorn.
+This is useful to examine the effectiveness of copy-on-write for forking clusters like Unicorn, Passenger, Puma and Resque.
 
 Usage:
 
@@ -112,6 +106,32 @@ Memory Summary:
 In this case, 103,536 kB out of 131,020 kB is shared, which means 79% of its memory is shared with worker processes.
 
 For more details, [read this gist](https://gist.github.com/kenn/5105175).
+
+
+## Out-of-band GC Usage
+
+Ruby 2.1 introduced generational garbage collection. It is a major improvement in terms of shorter GC pauses and overall higher throughput, but that comes with a [drawback of potential memory bloat](http://www.omniref.com/blog/blog/2014/03/27/ruby-garbage-collection-still-not-ready-for-production/).
+
+You can mitigate the bloat by manually running `GC.start`, but like Unicorn's out-of-band GC, doing it after every request can seriously hurt the performance. You want to run `GC.start` only when the process gets larger than X MB.
+
+Check the memory usage, and run GC if it's too big.
+
+```ruby
+if Memstat.linux?
+  status = Memstat::Proc::Status.new(pid: Process.pid)
+  if status.rss > 150.megabytes
+    GC.start
+  end
+end
+```
+
+For Unicorn, add these lines to your `config.ru` (should be added above loading environment) to check memory size on every request and run GC out-of-band:
+
+```ruby
+require 'memstat'
+
+use Memstat::OobGC::Unicorn, 150*(1024**2)  # Invoke GC if the process is bigger than 150MB
+```
 
 ## Changelog
 
